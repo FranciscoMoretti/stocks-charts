@@ -8,10 +8,14 @@ function App() {
   const [stockData, setStockData] = useState([]);
 
   useEffect(() => {
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
     fetch(
       `https://api.iex.cloud/v1/data/CORE/HISTORICAL_PRICES/SPY?token=${
         import.meta.env.VITE_IEXCLOUD_SECRET_KEY
-      }`
+      }&range=1m`,
+      { signal }
     )
       .then((res) => {
         return res.json().then((data) => {
@@ -19,8 +23,17 @@ function App() {
           console.log(data);
         });
       })
+      .catch((err) => {
+        if (err.name === "AbortError") {
+          console.log("Fetch aborted");
+        } else {
+          console.error(err);
+        }
+      });
 
-      .catch((err) => console.error(err));
+    return () => {
+      abortController.abort();
+    };
   }, []);
 
   return (

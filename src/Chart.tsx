@@ -24,17 +24,19 @@ export function Chart({ stocks }: ChartProps) {
       <LineChart width={1200} height={400} data={dataByDate}>
         {
           // Create a Line for each stock
-          Object.keys(stocks[0])
-            .filter((key) => key !== "date")
-            .map((stock, i) => {
-              return (
-                <Line
-                  type="monotone"
-                  dataKey={stock}
-                  stroke={DIFFERENT_LINE_COLORS[i]}
-                />
-              );
-            })
+          stocks.length &&
+            Object.keys(stocks[0])
+              .filter((key) => key !== "date")
+              .map((stock, i) => {
+                return (
+                  <Line
+                    key={stock}
+                    type="monotone"
+                    dataKey={stock}
+                    stroke={DIFFERENT_LINE_COLORS[i]}
+                  />
+                );
+              })
         }
         <CartesianGrid stroke="#ccc" />
         <XAxis dataKey="priceDate" />

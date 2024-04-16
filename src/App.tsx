@@ -1,104 +1,7 @@
-import { useEffect, useState } from "react";
-import { InputGroup } from "@blueprintjs/core";
 import "./App.css";
 import { Chart } from "./Chart";
-import { StockData } from "./api-types";
-
-function useStockPrice(tickerName: string, initialInterval = "1m") {
-  const [interval, setInterval] = useState(initialInterval);
-  const [stockData, setStockData] = useState<StockData>([]);
-  const [ticker, setTicker] = useState(tickerName);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    const signal = abortController.signal;
-    setIsLoading(true);
-
-    fetch(
-      `https://api.iex.cloud/v1/data/CORE/HISTORICAL_PRICES/${ticker}?token=${
-        import.meta.env.VITE_IEXCLOUD_SECRET_KEY
-      }&range=${interval}`,
-      { signal }
-    )
-      .then((res) => {
-        return res.json().then((data) => {
-          setStockData(data);
-          setIsLoading(false);
-        });
-      })
-      .catch((err) => {
-        if (err.name === "AbortError") {
-          console.log("Fetch aborted");
-        } else {
-          console.error(err);
-        }
-      });
-
-    return () => {
-      abortController.abort();
-    };
-  }, [ticker, interval]);
-
-  return { stockData, ticker, setTicker, isLoading, interval, setInterval };
-}
-
-function TickerSearcher({
-  ticker,
-  selectTicker,
-}: {
-  ticker: string;
-  selectTicker: (ticker: string) => void;
-}) {
-  const [tickers, setTickers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(ticker);
-
-  useEffect(() => {
-    fetch(
-      `https://api.iex.cloud/v1/search/${searchTerm}?token=${
-        import.meta.env.VITE_IEXCLOUD_SECRET_KEY
-      }`
-    )
-      .then((res) => {
-        return res.json().then((data) => {
-          console.log(data);
-          setTickers(data.map((ticker: any) => ticker.symbol));
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, [searchTerm]);
-
-  return (
-    <div style={{ width: "500px" }}>
-      <InputGroup
-        large
-        placeholder="Search..."
-        type="search"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <ul style={{ width: "500px" }}>
-        {tickers.map((ticker) => {
-          return (
-            <li style={{ listStyle: "none" }}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                {ticker}
-                <button
-                  style={{ background: "white", color: "black" }}
-                  onClick={() => selectTicker(ticker)}
-                >
-                  +
-                </button>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
+import { TickerSearcher } from "./TickerSearcher";
+import { useStockPrice } from "./useStockPrice";
 
 function App() {
   const {
@@ -117,23 +20,22 @@ function App() {
     setInterval: setInterval2,
   } = useStockPrice("IRBT", "1m");
 
-  if (isLoading1 || isLoading2) {
-    return <div>Loading...</div>;
-  }
-
   // Convert to format: {date: string, ticker1: number, ticker2: number}[]
-  const chartData = stockData1.map((dataPoint: any, index: number) => {
-    return {
-      date: dataPoint.date,
-      [ticker1]: dataPoint.close,
-      [ticker2]: stockData2[index].close,
-    };
-  });
+  const chartData =
+    isLoading1 || isLoading2
+      ? []
+      : stockData1.map((dataPoint: any, index: number) => {
+          return {
+            date: dataPoint.date,
+            [ticker1]: dataPoint.close,
+            [ticker2]: stockData2[index].close,
+          };
+        });
 
   return (
     <>
       <h1>Stocks Chart</h1>
-      {chartData && <Chart stocks={chartData} />}
+      <Chart stocks={chartData} />
       <div
         style={{
           display: "flex",

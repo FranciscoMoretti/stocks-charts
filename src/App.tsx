@@ -56,8 +56,16 @@ function App() {
           <option value="1y">1y</option>
           <option value="5y">5y</option>
         </select>
-        <TickerSearcher selectTicker={setTicker1} ticker={ticker1} />
-        <TickerSearcher selectTicker={setTicker2} ticker={ticker2} />
+        <TickerSearcher
+          selectTicker={setTicker1}
+          ticker={ticker1}
+          queryKey="ticker1"
+        />
+        <TickerSearcher
+          selectTicker={setTicker2}
+          ticker={ticker2}
+          queryKey="ticker2"
+        />
       </div>
     </>
   );

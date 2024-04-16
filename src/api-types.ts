@@ -24,3 +24,7 @@ export interface DataPoint {
   date: number;
   updated: number;
 }
+
+export type AutocompleteResponse = {
+  symbol: string;
+}[];

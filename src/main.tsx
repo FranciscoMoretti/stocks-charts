@@ -4,10 +4,15 @@ import App from "./App.tsx";
 import "./index.css";
 // Blueprint CSS libs
 import "@blueprintjs/core/lib/css/blueprint.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // include blueprint-icons.css for icon font support
+
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
   </React.StrictMode>
 );

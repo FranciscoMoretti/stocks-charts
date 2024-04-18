@@ -6,31 +6,33 @@ import { useStockPrice } from "./useStockPrice";
 function App() {
   const {
     stockData: stockData1,
+    isSuccess: isSuccess1,
     ticker: ticker1,
     setTicker: setTicker1,
-    isLoading: isLoading1,
+    isPending: isLoading1,
     setInterval: setInterval1,
     interval,
-  } = useStockPrice("SPY", "1m");
+  } = useStockPrice("SPY", "1m", "data-1");
   const {
     stockData: stockData2,
+    isSuccess: isSuccess2,
     ticker: ticker2,
     setTicker: setTicker2,
-    isLoading: isLoading2,
+    isPending: isLoading2,
     setInterval: setInterval2,
-  } = useStockPrice("IRBT", "1m");
+  } = useStockPrice("IRBT", "1m", "data-2");
 
   // Convert to format: {date: string, ticker1: number, ticker2: number}[]
   const chartData =
-    isLoading1 || isLoading2
-      ? []
-      : stockData1.map((dataPoint: any, index: number) => {
+    isSuccess1 && isSuccess2
+      ? stockData1!.map((dataPoint: any, index: number) => {
           return {
             date: dataPoint.date,
             [ticker1]: dataPoint.close,
-            [ticker2]: stockData2[index].close,
+            [ticker2]: stockData2![index].close,
           };
-        });
+        })
+      : [];
 
   return (
     <>

@@ -23,21 +23,27 @@ function App() {
   } = useStockPrice("IRBT", "1m", "data-2");
 
   // Convert to format: {date: string, ticker1: number, ticker2: number}[]
+  const isFetching = isPending1 || isPending2;
+  console.log(stockData1);
   const chartData =
-    isSuccess1 && isSuccess2
-      ? stockData1!.map((dataPoint: any, index: number) => {
+    isSuccess1 && isSuccess2 && !isFetching
+      ? stockData1.map((dataPoint: any, index: number) => {
           return {
             date: dataPoint.date,
-            [ticker1]: dataPoint.close,
-            [ticker2]: stockData2![index].close,
+            stockPrices: {
+              [ticker1]: dataPoint.close,
+              [ticker2]: stockData2 ? stockData2[index]?.close : undefined,
+            },
           };
         })
       : [];
 
+  console.log(isPending1, isPending2);
+
   return (
     <>
       <h1>Stocks Chart</h1>
-      <Chart stocks={chartData} />
+      <Chart stocks={chartData} isPending={isPending1 || isPending2} />
       <div
         style={{
           display: "flex",

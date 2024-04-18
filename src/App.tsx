@@ -9,7 +9,7 @@ function App() {
     isSuccess: isSuccess1,
     ticker: ticker1,
     setTicker: setTicker1,
-    isPending: isLoading1,
+    isPending: isPending1,
     setInterval: setInterval1,
     interval,
   } = useStockPrice("SPY", "1m", "data-1");
@@ -18,7 +18,7 @@ function App() {
     isSuccess: isSuccess2,
     ticker: ticker2,
     setTicker: setTicker2,
-    isPending: isLoading2,
+    isPending: isPending2,
     setInterval: setInterval2,
   } = useStockPrice("IRBT", "1m", "data-2");
 

@@ -9,14 +9,14 @@ import {
 } from "recharts";
 
 interface ChartProps {
-  stocks: { date: string } & Record<string, number>[];
+  stocks: { date: string; stockPrices: { ticker: string; price: number } }[];
 }
 
 const DIFFERENT_LINE_COLORS = ["#8884d8", "#4d8888", "#aa4d88", "#88aa4d"];
 
 export function Chart({ stocks }: ChartProps) {
   const dataByDate = stocks.sort((a, b) => {
-    return a.date - b.date;
+    return Number(a.date) - Number(b.date);
   });
 
   return (
@@ -27,12 +27,12 @@ export function Chart({ stocks }: ChartProps) {
           stocks.length &&
             Object.keys(stocks[0])
               .filter((key) => key !== "date")
-              .map((stock, i) => {
+              .map((ticker, i) => {
                 return (
                   <Line
-                    key={stock}
+                    key={`stockPrices.${ticker}`}
                     type="monotone"
-                    dataKey={stock}
+                    dataKey={ticker}
                     stroke={DIFFERENT_LINE_COLORS[i]}
                   />
                 );
